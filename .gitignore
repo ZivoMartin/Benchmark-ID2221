@@ -1,0 +1,67 @@
+
+# Python environments and caches
+.venv/
+.venv-*/
+venv/
+env/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.egg-info/
+
+# Local configuration and editor files
+.env
+.env.*
+!.env.example
+.idea/
+.vscode/
+.DS_Store
+
+# Downloaded and prepared datasets
+/data/raw/*.parquet
+/data/prepared/
+
+# Keep CSV lookup tables and preparation scripts
+
+# Temporary benchmark results
+/results/archive/
+/results/**/logs/
+*.log
+/results/**/smoke_test.csv
+/results/dask/measurements.csv
+
+# Redundant per-configuration measurements
+/results/**/final_*/*_w*.csv
+
+# Keep final measurements, summaries and metadata
+# results/*/final_*/measurements.csv
+# results/*/final_*/summary.csv
+# results/*/final_*/config.txt
+# results/*/final_*/requirements.freeze.txt
+# results/*/final_*/gpu_info.txt
+
+# Intermediate analysis artifacts
+/benchmark_evaluation/*.png
+/benchmark_evaluation/evaluation_report.pdf
+
+# Keep analysis source and consolidated data
+# benchmark_evaluation/build.py
+# benchmark_evaluation/all_measurements.csv
+# benchmark_evaluation/unified_summary.csv
+# benchmark_evaluation/audit.txt
+
+# LaTeX auxiliary files
+*.aux
+*.log
+*.out
+*.toc
+*.synctex.gz
+*.fls
+*.fdb_latexmk
+
+# OS and temporary files
+*~
+*.swp
+*.swo

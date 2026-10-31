@@ -1,0 +1,3 @@
+Runs: Dask 144, Spark 144, RAPIDS 36. All statuses OK.
+No duplicate run keys, row-count discrepancies or checksum discrepancies detected.
+Caveat: checksum equivalence does not prove complete intermediate operation execution.
