@@ -1,85 +1,99 @@
-# Dask and Spark Benchmarks
+# Spark, Dask, and RAPIDS Benchmarks
 
-Benchmarks comparing **Dask** and **Apache Spark** on NYC Yellow Taxi data.
+Performance comparison of **Apache Spark**, **Dask**, and **NVIDIA RAPIDS** using NYC Yellow Taxi trip data.
 
-Each framework runs three workloads: **aggregation**, **join**, and **iterative K-means**. The experiments use datasets of **100K, 500K, 1M, and 2M rows**, with **1, 2, 4, and 8 workers**. Each configuration includes one warm-up and three measured runs.
+The project evaluates three workloads—aggregation, join, and iterative K-means—on datasets containing **100K, 500K, 1M, and 2M rows**. CPU experiments use 1, 2, 4, and 8 workers; RAPIDS uses a single NVIDIA GPU. Each configuration includes one warmup and three measured executions.
 
-## Setup
+The evaluation covers execution time, scalability, and memory consumption. Results and interpretations are presented in [report.pdf](report.pdf).
 
-Run all commands from the repository root. Use separate Python environments for Dask and Spark:
+## Dataset
+
+The experiments use the [NYC TLC Yellow Taxi Trip Records](https://www.nyc.gov/site/tlc/about/tlc-trip-record-data.page) from January–March 2024.
+
+Source files:
+- [January 2024](https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-01.parquet)
+- [February 2024](https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-02.parquet)
+- [March 2024](https://d37ci6vzurychx.cloudfront.net/trip-data/yellow_tripdata_2024-03.parquet)
+
+The preparation script downloads the source data and generates four subsets under `data/prepared/`:
 
 ```bash
-python -m venv .venv
-.venv/bin/pip install -r requirements.txt
-
-python -m venv .venv-spark
-.venv-spark/bin/pip install -r requirements-spark.txt
+python common/prepare_data.py
 ```
 
-Spark also requires a working Java installation (Java 17 was used for these experiments). The Spark runner uses `.venv-spark/bin/python`.
+Prepared datasets are excluded from Git because they can be regenerated.
 
-## Data
+## Installation
 
-The benchmarks read prepared Parquet files from `data/prepared/`. These files are not committed to Git.
-
-Download the NYC TLC Yellow Taxi Parquet source files into `data/raw/`, then use the preparation utility in `common/prepare_data.py` to create the four datasets. The taxi-zone lookup CSVs are stored under `data/`.
-
-> Check the preparation script's command-line interface before running it; its exact arguments are not documented here.
-
-## Run the experiments
+Run all commands from the repository root.
 
 **Dask:**
 
 ```bash
-./run_dask_final.sh
+python -m venv .venv
+.venv/bin/pip install -r requirements.txt
 ```
 
-**Spark:**
+**Apache Spark:**
 
 ```bash
-./run_spark_final.sh
+python -m venv .venv-spark
+.venv-spark/bin/pip install -r requirements-spark.txt
 ```
 
-**Spark smoke test (optional):**
+Spark additionally requires Java 17.
+
+**NVIDIA RAPIDS:**
+
+RAPIDS requires a CUDA-compatible GPU and a compatible installation of cuDF and Dask-cuDF. Follow the [official installation instructions](https://docs.rapids.ai/install/).
+
+The GPU experiments were conducted on Google Colab using an NVIDIA Tesla T4. The recorded Python dependencies are available in `results/rapids/final_20261031T181930Z/requirements.freeze.txt`.
+
+## Running the Benchmarks
+
+The runner scripts are located in `scripts/` and should be executed from the repository root.
+
+| Framework | Command |
+|---|---|
+| Dask | `bash scripts/run_dask_final.sh` |
+| Spark | `bash scripts/run_spark_final.sh` |
+| RAPIDS | `bash scripts/run_rapids_final.sh` |
+
+Optional smoke tests are available for Spark and RAPIDS:
 
 ```bash
-./run_spark_smoke.sh
+bash scripts/run_spark_smoke.sh
+bash scripts/run_rapids_smoke.sh
 ```
 
-If a script is not executable, run `chmod +x run_*.sh` first.
+**Note:** If the scripts were moved from the repository root into `scripts/`, ensure their project-root detection points to the parent directory of `scripts/`.
 
-The full runs may take some time. Run each framework using its corresponding environment as configured in the scripts.
+## Results and Analysis
 
-## Results
+The recorded benchmark results are available under:
 
-The final results are included in the repository:
-
-- `results/dask/final_20261027T132222Z/`
-- `results/spark/final_20261027T134804Z/`
+```text
+results/
+├── dask/final_20261027T132222Z/
+├── spark/final_20261027T134804Z/
+└── rapids/final_20261031T181930Z/
+```
 
 Each directory contains:
 
-- `measurements.csv` — individual timed runs
-- `summary.csv` — aggregated results
-- `config.txt` — experiment configuration
-- `requirements.freeze.txt` — recorded Python dependencies
+- `measurements.csv` — individual benchmark executions.
+- `summary.csv` — aggregated results.
+- `requirements.freeze.txt` — recorded dependencies.
+- Additional environment metadata where available.
 
-Per-configuration CSVs and execution logs may be generated locally but are not needed to use the final summaries.
+Analysis scripts are located in `analysis/` and `benchmark_evaluation/`. They generate runtime comparisons, CPU scaling curves, and memory visualizations.
 
-## Plots
+The final report is available as [report.pdf](report.pdf), with its LaTeX source and figures in `report/`.
 
-Plotting scripts are in `analysis/`:
+## Reproducibility Notes
 
-```bash
-python analysis/plot_runtime.py
-python analysis/plot_memory.py
-python analysis/plot_scaling.py
-python analysis/plot_comparison.py
-```
+The CPU experiments used Python 3.14.8, while RAPIDS ran on Python 3.13 with cuDF 26.06 and a Tesla T4 GPU.
 
-These scripts may require input/output paths or other arguments; consult their command-line options before running them.
+CPU and GPU experiments were conducted on different hardware, so their performance differences should be interpreted as end-to-end comparisons rather than isolated GPU speedups.
 
-## Notes
-
-The reported results were collected on a specific machine and are sensitive to hardware, software versions, and execution settings. When comparing frameworks, use the same input data and document differences in execution environments.
-# Benchmark-ID2221
+The repository includes **324 measured executions** across the three frameworks, allowing the reported results to be inspected without rerunning the benchmarks.
