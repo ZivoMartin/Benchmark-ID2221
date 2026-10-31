@@ -51,22 +51,20 @@ The GPU experiments were conducted on Google Colab using an NVIDIA Tesla T4. The
 
 ## Running the Benchmarks
 
-The runner scripts are located in `scripts/` and should be executed from the repository root.
+The runner scripts are located in `.` and should be executed from the repository root.
 
 | Framework | Command |
 |---|---|
-| Dask | `bash scripts/run_dask_final.sh` |
-| Spark | `bash scripts/run_spark_final.sh` |
-| RAPIDS | `bash scripts/run_rapids_final.sh` |
+| Dask | `bash run_dask_final.sh` |
+| Spark | `bash run_spark_final.sh` |
+| RAPIDS | `bash run_rapids_final.sh` |
 
 Optional smoke tests are available for Spark and RAPIDS:
 
 ```bash
-bash scripts/run_spark_smoke.sh
-bash scripts/run_rapids_smoke.sh
+bash run_spark_smoke.sh
+bash run_rapids_smoke.sh
 ```
-
-**Note:** If the scripts were moved from the repository root into `scripts/`, ensure their project-root detection points to the parent directory of `scripts/`.
 
 ## Results and Analysis
 
